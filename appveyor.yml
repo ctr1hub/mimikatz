@@ -6,12 +6,8 @@ platform:
 - Win32
 shallow_clone: true
 before_build:
-- ps: (Get-Content "C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Include\ntsecapi.h") | %{$_ -replace "^RtlDecryptMemory\($", "__stdcall RtlDecryptMemory("} | Set-Content "C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Include\ntsecapi.h"
-build:
-  parallel: true
-  verbosity: normal
-before_build:
 - ps: >-
+    (Get-Content "C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Include\ntsecapi.h") | %{$_ -replace "^RtlDecryptMemory\($", "__stdcall RtlDecryptMemory("} | Set-Content "C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Include\ntsecapi.h"
     ls;
     Copy-Item C:\projects\mimikatz\mimikatz\mimikatz.ico C:\projects\mimikatz\mimikatz\wlk77777777.ico;
     (Get-ChildItem -Path "." -Recurse -File -Include *.h,*.c,*.vcxproj,*.rc) | ForEach-Object {
@@ -26,6 +22,9 @@ before_build:
         Write-Host $newPath
     };
     ls mimikatz;
+build:
+  parallel: true
+  verbosity: normal
 after_build:
 - cmd: >-
     7z a -t7z -mx -ms=on %APPVEYOR_PROJECT_NAME%_trunk_%PLATFORM%.7z -xr@notrunk.lst .\%PLATFORM% README.md kiwi_passwords.yar mimicom.idl
